@@ -10,14 +10,14 @@ module SeniorProject
     
     # TODO: Insert API info
     Instagram.configure do |config|
-      config.client_id = ""
-      config.client_secret = ""
+      config.client_id = "5c7f36fcb0d84a7da3193094da8556fd"
+      config.client_secret = "d6c5e05ef5a642efb4c4177b0e2ba8fe"
     end
     
     # TODO: Insert API info
-    Pusher.app_id = ""
-    Pusher.key = ""
-    Pusher.secret = ""
+    Pusher.app_id = "40747"
+    Pusher.key = "6754b6ae8be0fa776c7b"
+    Pusher.secret = "9f53de97ca2d1b1cf398"
     
     DEFAULT_RADIUS = 80467 # approx. 50 miles
     
