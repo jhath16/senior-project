@@ -1,14 +1,7 @@
 .bundle
-db/*.sqlite3
 log/*.log
 tmp/
 *~
-*.bat
-.rvmrc
 vendor/bundle
 vendor/local
-bin
-report/*
 .DS_Store
-.sass-cache/
-public/assets/
