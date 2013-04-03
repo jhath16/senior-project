@@ -1,17 +1,78 @@
 require 'sinatra/base'
+require 'instagram'
+require 'pusher'
 
 module SeniorProject
 	class Application < Sinatra::Base
     set :views, Proc.new { File.join(root, "views") }
     set :sessions, true
+    set :session_secret, 'W9yAGZ4wffSXfCmjUR'
+    
+    # TODO: Insert API info
+    Instagram.configure do |config|
+      config.client_id = ""
+      config.client_secret = ""
+    end
+    
+    # TODO: Insert API info
+    Pusher.app_id = ""
+    Pusher.key = ""
+    Pusher.secret = ""
+    
+    DEFAULT_RADIUS = 80467 # approx. 50 miles
     
 		get '/' do
-      @page_title = "Nearby Instagram stream"
+      @page_title = "Nearby Instagram Photos"
       
+      # Set a session id if there isn't one already set
+      session[:id] = ('a'..'z').to_a.shuffle[0,5].join if session[:id].nil?
       @session_id = session[:id]
+      
+      @longitude = session[:longitude]
+      @latitude = session[:latitude]
+      @accuracy = session[:accuracy]
       
       erb :stream
 		end
+    
+    post '/subscribe' do
+      # Subscribe to a location for the specified session
+      # Params: longitude, latitude, accuracy
 
+      # Get parameters from request and session
+      latitude = params[:latitude]
+      longitude = params[:longitude]
+      accuracy = params[:accuracy]
+      session_id = session[:id]
+
+      # Save location to session
+      session[:latitude] = latitude
+      session[:longitude] = longitude      
+      session[:accuracy] = accuracy
+
+      # TODO: Check for a subscription already active for this session ID
+      
+      # Build options to use for subscription
+      subscription_options = {
+        :lat => latitude,
+        :lng => longitude,
+        :radius => DEFAULT_RADIUS
+      }
+      # TODO: Finish this
+      #Instagram.create_subscription("geography", "http://justin.hathaway.cc/instagram/receive", "media", subscription_options)
+      
+      # Always return the session ID
+      session_id
+    end
+    
+    post '/instagram/receive/:session_id' do
+      # Receive notifications from Instagram API, send information to Pusher
+      # Params: ???
+      session_id = params[:session_id]
+      
+      # TODO: Finish this
+      # Send new photo info to client
+      #Pusher.trigger(session_id, 'new_photo', {:some => "data"})
+    end
 	end
 end

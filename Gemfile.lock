@@ -1,11 +1,25 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    haml (4.0.1)
-      tilt
+    faraday (0.8.7)
+      multipart-post (~> 1.1)
+    faraday_middleware (0.9.0)
+      faraday (>= 0.7.4, < 0.9)
+    hashie (2.0.3)
+    instagram (0.10.0)
+      faraday (>= 0.7, < 0.9)
+      faraday_middleware (~> 0.8)
+      hashie (>= 0.4.0)
+      multi_json (~> 1.0, >= 1.0.3)
+    multi_json (1.7.2)
+    multipart-post (1.2.0)
+    pusher (0.11.3)
+      multi_json (~> 1.0)
+      signature (~> 0.1.6)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
+    signature (0.1.6)
     sinatra (1.4.2)
       rack (~> 1.5, >= 1.5.2)
       rack-protection (~> 1.4)
@@ -16,5 +30,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  haml
+  instagram
+  pusher
   sinatra

@@ -1,3 +1,43 @@
-<h1>Bootstrap starter template</h1>
-<p class="lead">Session ID: <%= @session_id %>
-<p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
+<p>Session ID: <%= @session_id %></p>
+
+<p>Latitude: <%= @latitude %></p>
+<p>Longitude: <%= @longitude %></p>
+<p>Accuracy: <%= @accuracy %></p>
+
+<script type="text/javascript">
+
+function subscribeToLocation(latitude, longitude, accuracy)
+{
+	$.post("/subscribe", { 
+			longitude: longitude,
+			latitude: latitude,
+			accuracy: accuracy
+		},
+		function(data) {
+			debugger;
+			// TODO: Subscribe to pusher channel
+		}
+	)
+	.fail(function() { alert("Error while subscribing to location"); } );
+}
+
+function processLocation(location)
+{
+	subscribeToLocation(location.coords.latitude, location.coords.longitude, location.coords.accuracy);
+}
+	
+function handleError(error)
+{
+	alert("Unable to get location: " + error.message);
+}
+
+
+$(document).ready(function() {
+	<% if @longitude.nil? and @latitude.nil? and @accuracy.nil? %>
+	navigator.geolocation.getCurrentPosition(processLocation, handleError);
+	<% else %>
+	subscribeToLocation(<%= @latitude %>, <%= @longitude %>, <%= @accuracy %>);
+	<% end %>
+});
+
+</script>
