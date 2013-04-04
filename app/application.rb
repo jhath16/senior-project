@@ -20,8 +20,6 @@ module SeniorProject
     Pusher.key = "6754b6ae8be0fa776c7b"
     Pusher.secret = "9f53de97ca2d1b1cf398"
     
-    DEFAULT_RADIUS = 80467 # approx. 50 miles
-    
 		get '/' do
       browser = Browser.new(:ua => request.user_agent, :accept_language => "en-us")
       @page_title = "Local Instagram Photos"
@@ -60,8 +58,7 @@ module SeniorProject
       # Build options to use for subscription
       subscription_options = {
         :lat => latitude,
-        :lng => longitude,
-        :radius => DEFAULT_RADIUS
+        :lng => longitude
       }
       # TODO: Finish this
       #Instagram.create_subscription("geography", "http://justin.hathaway.cc/instagram/receive/#{session_id}", "media", subscription_options)

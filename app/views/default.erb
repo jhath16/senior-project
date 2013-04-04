@@ -25,20 +25,20 @@ function subscribeToLocation(latitude, longitude, title)
 
 				$(".slider").append(
 					$("<div>").addClass("slide").append(
-						$("<a>").attr("href", "instagram://media?id=" + photo.id).append(
+						$("<a>").attr("href", photo.link).attr("target", "_blank").append(
 							$("<img>").attr("src", photo.images.standard_resolution.url)
 						)
 					).append(
 						$("<div>").addClass("meta").append(
 							$("<div>").addClass("profile_picture").append(
-								$("<a>").attr("href", "instagram://user?username=" + photo.user.username).append(
+								$("<a>").attr("href", "http://instagram.com/" + photo.user.username).attr("target", "_blank").append(
 									$("<img>").addClass("pull-left").addClass("img-rounded").attr("src", photo.user.profile_picture)
 								)
 							)
 						).append(
 							$("<div>").addClass("profile_username").append(
 								$("<span>").addClass("username").append(
-									$("<a>").attr("href", "instagram://user?username=" + photo.user.username).html(photo.user.username)
+									$("<a>").attr("href", "http://instagram.com/" + photo.user.username).attr("target", "_blank").html(photo.user.username)
 								)
 							)
 						).append(
