@@ -1,7 +1,4 @@
-
-
-
-.loading img { margin:140px auto 0; }
+.loading { width:50px; margin:140px auto 0; }
 
 .meta { padding:7px 5px; overflow:scroll; height:160px; }
 .profile_picture img { width:48px; height:48px; }
