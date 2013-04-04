@@ -14,32 +14,48 @@
 
 <script type="text/javascript">
 
+function resetPhotos()
+{
+	$(".collapse").collapse({
+	  toggle: false
+	});
+	$(".collapse").collapse('hide');
+
+	$('.iosSlider').iosSlider('destroy');
+	$(".slider").empty();
+	$(".slider").append(
+		$("<div>").addClass("loading").append(
+			$("<img>").attr("src", "/images/loading.gif")
+		)
+	);
+}
+
+function initializeSlider()
+{
+	$('.iosSlider').iosSlider({
+		snapToChildren: true,
+		desktopClickDrag: true,
+		infiniteSlider: true,
+		snapSlideCenter: true,
+		responsiveSlideContainer: true,
+		responsiveSlides: true
+	});
+}
+
 function subscribeToLocation(latitude, longitude, title)
 {
+	resetPhotos();
+
 	$.post("/subscribe", { 
 			longitude: longitude,
 			latitude: latitude
 		},
 		function(data) {
-			$(".slider").empty();
 			$(".slider").html(data);
 
-			$('.iosSlider').iosSlider('destroy');
+			initializeSlider();
 
-			// TODO: populate slider and initialize
-			$('.iosSlider').iosSlider({
-				snapToChildren: true,
-				desktopClickDrag: true,
-				infiniteSlider: true,
-				snapSlideCenter: true,
-				responsiveSlideContainer: true,
-				responsiveSlides: true
-			});
-
-			$(".collapse").collapse({
-			  toggle: false
-			});
-			$(".collapse").collapse('hide');
+			
 
 			$(".brand").html(title)
 
@@ -50,7 +66,7 @@ function subscribeToLocation(latitude, longitude, title)
 			//});
 		}
 	)
-	.fail(function() { alert("Error while subscribing to location"); } );
+	.fail(function() { alert("Unable to get photos from Instagram"); } );
 }
 
 function processLocation(location)
