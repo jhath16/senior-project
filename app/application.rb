@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'instagram'
 require 'pusher'
+require 'browser'
 
 module SeniorProject
 	class Application < Sinatra::Base
@@ -22,6 +23,7 @@ module SeniorProject
     DEFAULT_RADIUS = 80467 # approx. 50 miles
     
 		get '/' do
+      browser = Browser.new(:ua => request.user_agent, :accept_language => "en-us")
       @page_title = "Local Instagram Photos"
       
       # Set a session id if there isn't one already set
@@ -33,7 +35,11 @@ module SeniorProject
 
       @photos = []#Instagram.media_popular
       
-      erb :stream
+      if browser.mobile?
+        erb :mobile, :layout => :mobile_layout
+      else
+        erb :default
+      end
 		end
     
     post '/subscribe' do
@@ -61,7 +67,7 @@ module SeniorProject
       #Instagram.create_subscription("geography", "http://justin.hathaway.cc/instagram/receive/#{session_id}", "media", subscription_options)
 
       content_type 'application/json', :charset => 'utf-8'
-      photos = Instagram.media_search(latitude, longitude, :distance => 5000)      
+      photos = Instagram.media_search(latitude, longitude, :distance => 5000)
       photos.to_json
     end
     
