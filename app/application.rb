@@ -22,33 +22,32 @@ module SeniorProject
     DEFAULT_RADIUS = 80467 # approx. 50 miles
     
 		get '/' do
-      @page_title = "Nearby Instagram Photos"
+      @page_title = "Local Instagram Photos"
       
       # Set a session id if there isn't one already set
       session[:id] = ('a'..'z').to_a.shuffle[0,5].join if session[:id].nil?
       @session_id = session[:id]
       
-      @longitude = session[:longitude]
-      @latitude = session[:latitude]
-      @accuracy = session[:accuracy]
+      @longitude = nil#session[:longitude]
+      @latitude = nil#session[:latitude]
+
+      @photos = []#Instagram.media_popular
       
       erb :stream
 		end
     
     post '/subscribe' do
       # Subscribe to a location for the specified session
-      # Params: longitude, latitude, accuracy
+      # Params: longitude, latitude
 
       # Get parameters from request and session
       latitude = params[:latitude]
       longitude = params[:longitude]
-      accuracy = params[:accuracy]
       session_id = session[:id]
 
       # Save location to session
       session[:latitude] = latitude
       session[:longitude] = longitude      
-      session[:accuracy] = accuracy
 
       # TODO: Check for a subscription already active for this session ID
       
@@ -59,10 +58,11 @@ module SeniorProject
         :radius => DEFAULT_RADIUS
       }
       # TODO: Finish this
-      #Instagram.create_subscription("geography", "http://justin.hathaway.cc/instagram/receive", "media", subscription_options)
-      
-      # Always return the session ID
-      session_id
+      #Instagram.create_subscription("geography", "http://justin.hathaway.cc/instagram/receive/#{session_id}", "media", subscription_options)
+
+      content_type 'application/json', :charset => 'utf-8'
+      photos = Instagram.media_search(latitude, longitude, :distance => 5000)      
+      photos.to_json
     end
     
     post '/instagram/receive/:session_id' do

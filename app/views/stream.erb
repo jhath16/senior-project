@@ -1,24 +1,80 @@
 <div class="row-fluid">
 	<div class="span12">
-		<p>Session ID: <%= @session_id %></p>
 
-		<p>Latitude: <%= @latitude %></p>
-		<p>Longitude: <%= @longitude %></p>
-		<p>Accuracy: <%= @accuracy %></p>
+		<div class='iosSlider'>
+			<div class='slider'></div>
+		</div>
+
 	</div>
 </div>
 
 <script type="text/javascript">
 
-function subscribeToLocation(latitude, longitude, accuracy)
+function subscribeToLocation(latitude, longitude, title)
 {
 	$.post("/subscribe", { 
 			longitude: longitude,
-			latitude: latitude,
-			accuracy: accuracy
+			latitude: latitude
 		},
 		function(data) {
+			debugger;
+			$(".slider").empty();
+			// Insert photos
+			for (var i = 0; i < data.length; i++) {
+				var photo = data[i];
+
+				$(".slider").append(
+					$("<div>").addClass("slide").append(
+						$("<a>").attr("href", "instagram://media?id=" + photo.id).append(
+							$("<img>").attr("src", photo.images.standard_resolution.url)
+						)
+					).append(
+						$("<div>").addClass("meta").append(
+							$("<div>").addClass("profile_picture").append(
+								$("<a>").attr("href", "instagram://user?username=" + photo.user.username).append(
+									$("<img>").addClass("pull-left").addClass("img-rounded").attr("src", photo.user.profile_picture)
+								)
+							)
+						).append(
+							$("<div>").addClass("profile_username").append(
+								$("<span>").addClass("username").append(
+									$("<a>").attr("href", "instagram://user?username=" + photo.user.username).html(photo.user.username)
+								)
+							)
+						).append(
+							$("<div>").addClass("caption").append(
+								$("<span>").addClass("caption_text").html(photo.caption == null ? "" : photo.caption.text)
+							)
+						)
+					)
+				);
+
+			}
+
+			$('.iosSlider').iosSlider('destroy');
+
+			// TODO: populate slider and initialize
+			$('.iosSlider').iosSlider({
+				snapToChildren: true,
+				desktopClickDrag: true,
+				infiniteSlider: true,
+				snapSlideCenter: true,
+				responsiveSlideContainer: true,
+				responsiveSlides: true
+			});
+
+			$(".collapse").collapse({
+			  toggle: false
+			});
+			$(".collapse").collapse('hide');
+
+			$(".brand").html(title)
+
 			// TODO: Subscribe to pusher channel
+			//var channel = pusher.subscribe('<%= @session_id %>');
+			//channel.bind('new_photo', function(data) {
+			//  alert('Received my-event with message: ' + data.message);
+			//});
 		}
 	)
 	.fail(function() { alert("Error while subscribing to location"); } );
@@ -26,7 +82,8 @@ function subscribeToLocation(latitude, longitude, accuracy)
 
 function processLocation(location)
 {
-	subscribeToLocation(location.coords.latitude, location.coords.longitude, location.coords.accuracy);
+	$(".local").attr("data-latitude", location.coords.latitude).attr("data-longitude", location.coords.longitude);
+	subscribeToLocation(location.coords.latitude, location.coords.longitude, 'Local');
 }
 	
 function handleError(error)
@@ -36,11 +93,32 @@ function handleError(error)
 
 
 $(document).ready(function() {
-	<% if @longitude.nil? and @latitude.nil? and @accuracy.nil? %>
 	navigator.geolocation.getCurrentPosition(processLocation, handleError);
-	<% else %>
-	subscribeToLocation(<%= @latitude %>, <%= @longitude %>, <%= @accuracy %>);
-	<% end %>
+
+	window.addEventListener("load",function() {
+		// Set a timeout...
+		setTimeout(function(){
+			// Hide the address bar!
+			window.scrollTo(0, 1);
+		}, 0);
+	});
+
+	/*setTimeout(function(){
+		demo_html = '<div class="slide"><img src="http://distilleryimage11.s3.amazonaws.com/2f1fab969c9e11e2a3e422000a1fbe39_7.jpg"></div>';
+		$('.iosSlider').iosSlider('addSlide', demo_html, 1);
+		$('.iosSlider').iosSlider('goToSlide', 1);
+	}, 5000);*/
+
+	$(".nav li a").on("click", function(event){
+		var latitude = $(this).attr('data-latitude');
+		var longitude = $(this).attr('data-longitude');
+		var title = $(this).html();
+
+  	subscribeToLocation(latitude, longitude, title); 
+  	$('.nav li').removeClass('active'); 
+  	$(this).parent().addClass('active'); 
+  	return false;
+	});
 });
 
 </script>
