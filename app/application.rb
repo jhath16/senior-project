@@ -36,36 +36,36 @@ module SeniorProject
       if browser.mobile?
         erb :mobile, :layout => :mobile_layout
       else
-        erb :default
+        erb :desktop
       end
 		end
     
     post '/subscribe' do
       # Subscribe to a location for the specified session
-      # Params: longitude, latitude
+      browser = Browser.new(:ua => request.user_agent, :accept_language => "en-us")
 
       # Get parameters from request and session
       latitude = params[:latitude]
       longitude = params[:longitude]
       session_id = session[:id]
 
-      # Save location to session
-      session[:latitude] = latitude
-      session[:longitude] = longitude      
-
       # TODO: Check for a subscription already active for this session ID
       
       # Build options to use for subscription
-      subscription_options = {
-        :lat => latitude,
-        :lng => longitude
-      }
+      #subscription_options = {
+      #  :lat => latitude,
+      #  :lng => longitude
+      #}
       # TODO: Finish this
       #Instagram.create_subscription("geography", "http://justin.hathaway.cc/instagram/receive/#{session_id}", "media", subscription_options)
 
-      content_type 'application/json', :charset => 'utf-8'
-      photos = Instagram.media_search(latitude, longitude, :distance => 5000)
-      photos.to_json
+      @photos = Instagram.media_search(latitude, longitude, :distance => 5000)
+
+      if browser.mobile?
+        erb :mobile_photos, :layout => false
+      else
+        erb :desktop_photos, :layout => false
+      end 
     end
     
     post '/instagram/receive/:session_id' do

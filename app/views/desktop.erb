@@ -17,39 +17,8 @@ function subscribeToLocation(latitude, longitude, title)
 			latitude: latitude
 		},
 		function(data) {
-			debugger;
 			$(".slider").empty();
-			// Insert photos
-			for (var i = 0; i < data.length; i++) {
-				var photo = data[i];
-
-				$(".slider").append(
-					$("<div>").addClass("slide").append(
-						$("<a>").attr("href", photo.link).attr("target", "_blank").append(
-							$("<img>").attr("src", photo.images.standard_resolution.url)
-						)
-					).append(
-						$("<div>").addClass("meta").append(
-							$("<div>").addClass("profile_picture").append(
-								$("<a>").attr("href", "http://instagram.com/" + photo.user.username).attr("target", "_blank").append(
-									$("<img>").addClass("pull-left").addClass("img-rounded").attr("src", photo.user.profile_picture)
-								)
-							)
-						).append(
-							$("<div>").addClass("profile_username").append(
-								$("<span>").addClass("username").append(
-									$("<a>").attr("href", "http://instagram.com/" + photo.user.username).attr("target", "_blank").html(photo.user.username)
-								)
-							)
-						).append(
-							$("<div>").addClass("caption").append(
-								$("<span>").addClass("caption_text").html(photo.caption == null ? "" : photo.caption.text)
-							)
-						)
-					)
-				);
-
-			}
+			$(".slider").html(data);
 
 			$('.iosSlider').iosSlider('destroy');
 

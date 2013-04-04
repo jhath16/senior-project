@@ -1,0 +1,27 @@
+<% unless @photos.nil? %>
+	<% @photos.each do |photo| %>
+		<div class="slide">
+			<a href="<%= photo.link %>" target="instagram">
+				<img src="<%= photo.images.standard_resolution.url %>" />
+			</a>
+
+			<div class="meta">
+				<div class="profile_picture">
+					<a href="http://instagram.com/<%= photo.user.username %>" target="instagram">
+						<img src="<%= photo.user.profile_picture %>" class="pull-left img-rounded" />
+					</a>
+				</div>
+
+				<div class="profile_username">
+					<span class="username">
+						<a href="http://instagram.com/<%= photo.user.username %>" target="instagram"><%= photo.user.username %></a>
+					</span>
+				</div>
+
+				<div class="caption">
+					<span class="caption_text"><%= photo.caption.nil? ? "" : photo.caption.text %></span>
+				</div>
+		</div>
+	</div>
+	<% end %>
+<% end %>
