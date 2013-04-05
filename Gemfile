@@ -4,3 +4,5 @@ gem "sinatra"
 gem "instagram"
 gem "pusher"
 gem "browser"
+
+gem "capistrano"
