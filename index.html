@@ -120,6 +120,7 @@
         clientId: '5c7f36fcb0d84a7da3193094da8556fd',
         target: 'photos',
         resolution: 'standard_resolution',
+        template: '<div class="slide"><a href="instagram://media?id={{id}}"><img src="{{image}}" /></a><div class="meta"><div class="profile_picture"><a href="instagram://user?username={{model.user.username}}"><img src="{{model.user.profile_picture}}" class="pull-left img-rounded" /></a></div><div class="profile_username"><span class="username"><a href="instagram://user?username={{model.user.username}}">{{model.user.username}}</a></span></div><div class="caption"><span class="caption_text">{{caption}}</span></div></div></div>',
         after: function() {
           initializeSlider();
           $(".brand").html(title);  
