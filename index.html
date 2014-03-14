@@ -5,9 +5,9 @@
     <title>Senior Project</title>
     <meta name="viewport" content="initial-scale=1.0" />
 
-    <link href="./stylesheets/bootstrap.min.css" rel="stylesheet" />
-    <link href="./stylesheets/bootstrap-responsive.min.css" rel="stylesheet" />
-    <link href="./stylesheets/desktop.css" rel="stylesheet" />
+    <link href="./stylesheets/bootstrap.min.css" />
+    <link href="./stylesheets/bootstrap-responsive.min.css" />
+    <link href="./stylesheets/desktop.css" />
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -26,6 +26,7 @@
     <script src="./javascripts/bootstrap.min.js"></script>
     <script src="./javascripts/jquery.photoset-grid.min.js"></script>
 		<script src="./javascripts/jquery.iosslider.min.js"></script>
+    <script src="./javascripts/instafeed.min.js"></script>
 
     <!-- Hide the address bar in mobile safari -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -66,102 +67,105 @@
     <div id="stream" class="container-fluid">
 
      <div class="row-fluid">
-	<div class="span12">
+    	<div class="span12">
 
-		<div class='iosSlider'>
-			<div class='slider'>
-				<div class="loading">
-					<img src="./images/loading.gif"/>
-				</div>
-			</div>
-		</div>
+    		<div class='iosSlider'>
+    			<div id="photos" class='slider'>
+    				<div class="loading">
+    					<img src="./images/loading.gif"/>
+    				</div>
+    			</div>
+    		</div>
 
-	</div>
-</div>
+    	</div>
+    </div>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-function resetPhotos()
-{
-	$(".collapse").collapse({
-	  toggle: false
-	});
-	$(".collapse").collapse('hide');
+    function resetPhotos()
+    {
+    	$(".collapse").collapse({
+    	  toggle: false
+    	});
+    	$(".collapse").collapse('hide');
 
-	$('.iosSlider').iosSlider('destroy');
-	$(".slider").empty();
-	$(".slider").append(
-		$("<div>").addClass("loading").append(
-			$("<img>").attr("src", "./images/loading.gif")
-		)
-	);
-}
+    	$('.iosSlider').iosSlider('destroy');
+    	$(".slider").empty();
+    	$(".slider").append(
+    		$("<div>").addClass("loading").append(
+    			$("<img>").attr("src", "./images/loading.gif")
+    		)
+    	);
+    }
 
-function initializeSlider()
-{
-	$('.iosSlider').iosSlider({
-		snapToChildren: true,
-		desktopClickDrag: true,
-		infiniteSlider: true,
-		snapSlideCenter: true,
-		responsiveSlideContainer: true,
-		responsiveSlides: true
-	});
-}
+    function initializeSlider()
+    {
+    	$('.iosSlider').iosSlider({
+    		snapToChildren: true,
+    		desktopClickDrag: true,
+    		infiniteSlider: true,
+    		snapSlideCenter: true,
+    		responsiveSlideContainer: true,
+    		responsiveSlides: true
+    	});
+    }
 
-function subscribeToLocation(latitude, longitude, title)
-{
-	resetPhotos();
+    function loadByLocation(latitude, longitude, title)
+    {
+    	resetPhotos();
 
-	$.post("/subscribe", { 
-			longitude: longitude,
-			latitude: latitude
-		},
-		function(data) {
-			$(".slider").html(data);
-			initializeSlider();
-			$(".brand").html(title)
-		}
-	)
-	.fail(function() { alert("Unable to get photos from Instagram"); } );
-}
+      var feed = new Instafeed({
+        get: 'tagged',
+        tagName: 'awesome',
+        clientId: '5c7f36fcb0d84a7da3193094da8556fd',
+        target: 'photos',
+        after: function() {
+          //initializeSlider();
+          $(".brand").html(title);  
+        },
+        error: function (msg) {
+          alert("Unable to get photos from Instagram. ("+msg+")");
+        }
+      });
+      feed.run();
+    }
 
-function processLocation(location)
-{
-	$(".local").attr("data-latitude", location.coords.latitude).attr("data-longitude", location.coords.longitude);
-	subscribeToLocation(location.coords.latitude, location.coords.longitude, 'Local');
-}
-	
-function handleError(error)
-{
-	alert("Unable to get location: " + error.message);
-}
+    function processLocation(location)
+    {
+    	$(".local").attr("data-latitude", location.coords.latitude).attr("data-longitude", location.coords.longitude);
+    	loadByLocation(location.coords.latitude, location.coords.longitude, 'Local');
+    }
 
+    function handleError(error)
+    {
+      alert("Unable to get location: " + error.message);
+    }
 
-$(document).ready(function() {
-	navigator.geolocation.getCurrentPosition(processLocation, handleError);
+    $(document).ready(function() {
+    	navigator.geolocation.getCurrentPosition(processLocation, handleError);
 
-	window.addEventListener("load",function() {
-		// Set a timeout...
-		setTimeout(function(){
-			// Hide the address bar!
-			window.scrollTo(0, 1);
-		}, 0);
-	});
+    	window.addEventListener("load",function() {
+    		// Set a timeout...
+    		setTimeout(function(){
+    			// Hide the address bar!
+    			window.scrollTo(0, 1);
+    		}, 0);
+    	});
 
-	$(".nav li a").on("click", function(event){
-		var latitude = $(this).attr('data-latitude');
-		var longitude = $(this).attr('data-longitude');
-		var title = $(this).html();
+    	$(".nav li a").on("click", function(event){
+      	event.preventDefault();
 
-  	subscribeToLocation(latitude, longitude, title); 
-  	$('.nav li').removeClass('active'); 
-  	$(this).parent().addClass('active'); 
-  	return false;
-	});
-});
+        var latitude = $(this).attr('data-latitude');
+        var longitude = $(this).attr('data-longitude');
+        var title = $(this).html();
 
-</script>
+        loadByLocation(latitude, longitude, title); 
+        $('.nav li').removeClass('active'); 
+        $(this).parent().addClass('active'); 
+    	});
+    });
+
+    </script>
 
       
     </div> <!-- /container -->
