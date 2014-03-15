@@ -26,7 +26,6 @@
     <script src="javascripts/bootstrap.min.js"></script>
     <script src="javascripts/jquery.photoset-grid.min.js"></script>
 		<script src="javascripts/jquery.iosslider.min.js"></script>
-    <script src="javascripts/instafeed.min.js"></script>
 
     <!-- Hide the address bar in mobile safari -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -110,41 +109,60 @@
     	});
     }
 
-    function getNearbyLocationId(latitude, longitude, title)
-    {
-      var url = "https://api.instagram.com/v1/locations/search?lat="+latitude+"&lng="+longitude+"&client_id=5c7f36fcb0d84a7da3193094da8556fd";
-      $.get( url, function( data ) {
-        debugger;
-        //loadByLocation(data.location_id, title);
-      });
-    }
-
-    function loadByLocation(location_id, title)
+    function loadByLocation(latitude, longitude, title)
     {
     	resetPhotos();
 
-      var feed = new Instafeed({
-        get: 'tagged',
-        tagName: 'awesome',
-        clientId: '5c7f36fcb0d84a7da3193094da8556fd',
-        target: 'photos',
-        resolution: 'standard_resolution',
-        template: '<div class="slide"><a href="instagram://media?id={{id}}"><img src="{{image}}" /></a><div class="meta"><div class="profile_picture"><a href="instagram://user?username={{model.user.username}}"><img src="{{model.user.profile_picture}}" class="pull-left img-rounded" /></a></div><div class="profile_username"><span class="username"><a href="instagram://user?username={{model.user.username}}">{{model.user.username}}</a></span></div><div class="caption"><span class="caption_text">{{caption}}</span></div></div></div>',
-        after: function() {
-          initializeSlider();
-          $(".brand").html(title);  
+      var url = "https://api.instagram.com/v1/media/search?lat="+latitude+"&lng="+longitude+"&client_id=5c7f36fcb0d84a7da3193094da8556fd&distance=5000";
+      $.ajax({
+        type: 'GET',
+        url: url,
+        async: false,
+        jsonpCallback: 'jsonCallback',
+        contentType: "application/json",
+        dataType: 'jsonp',
+        success: function(json) {
+          $('.loading').remove();
+          json.data.forEach(function(image) {
+            $('#photos').append(
+              $('<div>').addClass('slide').append(
+                $('<a>').attr('href', 'instagram://media?id='+image.id).append(
+                  $('<img>').attr('src', image.images.standard_resolution.url)
+                )
+              ).append(
+                $('<div>').addClass('meta').append(
+                  $('<div>').addClass('profile_picture').append(
+                    $('<a>').attr('href', 'instagram://user?username='+image.user.username).append(
+                      $('<img>').attr('src', image.user.profile_picture).addClass('pull-left').addClass('img-rounded')
+                    )
+                  )
+                ).append(
+                  $('<div>').addClass('profile_username').append(
+                    $('<span>').addClass('username').append(
+                      $('<a>').attr('href', 'instagram://user?username='+image.user.username).text(image.user.username)
+                    )
+                  )
+                ).append(
+                  $('<div>').addClass('caption').append(
+                    $('<span>').addClass('caption_text').text(image.caption.text)
+                  )
+                )
+              )
+            );
+            initializeSlider();
+            $(".brand").html(title);
+          })
         },
-        error: function (msg) {
-          alert("Unable to get photos from Instagram. ("+msg+")");
+        error: function(e) {
+          console.log(e.message);
         }
       });
-      feed.run();
     }
 
     function processLocation(location)
     {
     	$(".local").attr("data-latitude", location.coords.latitude).attr("data-longitude", location.coords.longitude);
-      getNearbyLocationId(location.coords.latitude, location.coords.longitude, 'Local');
+      loadByLocation(location.coords.latitude, location.coords.longitude, 'Local');
     }
 
     function handleError(error)
@@ -170,7 +188,7 @@
         var longitude = $(this).attr('data-longitude');
         var title = $(this).html();
 
-        getNearbyLocationId(latitude, longitude, title); 
+        loadByLocation(latitude, longitude, title); 
         $('.nav li').removeClass('active'); 
         $(this).parent().addClass('active'); 
     	});
