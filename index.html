@@ -145,7 +145,7 @@
                   )
                 ).append(
                   $('<div>').addClass('caption').append(
-                    $('<span>').addClass('caption_text').text(image.caption.text)
+                    $('<span>').addClass('caption_text').text(image.caption == null ? "" : image.caption.text)
                   )
                 )
               )
