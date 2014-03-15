@@ -123,7 +123,8 @@
         dataType: 'jsonp',
         success: function(json) {
           $('.loading').remove();
-          json.data.forEach(function(image) {
+          for (index = 0; index < json.data.length; ++index) {
+            image = json.data[index];
             $('#photos').append(
               $('<div>').addClass('slide').append(
                 $('<a>').attr('href', 'instagram://media?id='+image.id).append(
@@ -149,9 +150,9 @@
                 )
               )
             );
-            initializeSlider();
-            $(".brand").html(title);
-          })
+          }
+          initializeSlider();
+          $(".brand").html(title);
         },
         error: function(e) {
           console.log(e.message);
